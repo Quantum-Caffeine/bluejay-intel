@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BlueJay Intel — Harnais agentiques pour LLM locaux</title>
-<meta name="description" content="BlueJay Intel conçoit des harnais agentiques pour modèles de langage locaux. Découvrez corviPi et aPiary, nos deux harnais en développement.">
+<title>BlueJay Intel — corviPi &amp; aPiary, harnais agentiques pour LLM locaux</title>
+<meta name="description" content="BlueJay Intel conçoit des harnais agentiques pour LLM locaux : corviPi, pour travailler sur vos projets en sécurité avec un contexte optimisé, et aPiary, votre agent personnel qui délègue à ses abeilles ouvrières.">
 <meta name="theme-color" content="#060a14">
 <meta property="og:type" content="website">
-<meta property="og:title" content="BlueJay Intel — Harnais agentiques pour LLM locaux">
-<meta property="og:description" content="Des harnais agentiques conçus pour faire tourner des agents LLM en local : souverains, observables et taillés pour le terrain.">
+<meta property="og:title" content="BlueJay Intel — corviPi &amp; aPiary, harnais agentiques pour LLM locaux">
+<meta property="og:description" content="corviPi : travailler sur vos projets en sécurité, sans saturer le contexte. aPiary : un agent personnel entouré de bots qui exécutent vos tâches en autonomie. Tous deux bâtis sur le harnès PI.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
@@ -186,6 +186,15 @@
   .badge .pulse{width:7px;height:7px;border-radius:50%;background:#fbbf24;box-shadow:0 0 0 0 rgba(251,191,36,.6);animation:pulse 2s infinite}
   @keyframes pulse{70%{box-shadow:0 0 0 8px rgba(251,191,36,0)}100%{box-shadow:0 0 0 0 rgba(251,191,36,0)}}
   .proj .desc{color:var(--muted);font-size:1rem}
+  .tag.built-on{align-self:flex-start;color:var(--cyan);background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.35);font-weight:600;font-size:11.5px;letter-spacing:.04em;padding:4px 10px}
+  .features{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  .features li{position:relative;padding-left:28px;font-size:.95rem;color:#c4d2e8}
+  .features li::before{
+    content:"";position:absolute;left:0;top:.42em;width:14px;height:8px;
+    border-left:2px solid var(--cyan);border-bottom:2px solid var(--cyan);
+    transform:rotate(-45deg);border-radius:1px;
+  }
+  .features strong{color:var(--text)}
   .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
   .tag{font-family:var(--mono);font-size:12px;color:#b9cbe8;background:rgba(120,170,255,.08);border:1px solid var(--border);padding:4px 10px;border-radius:8px}
 
@@ -262,10 +271,12 @@
       <div>
         <div class="eyebrow"><span class="dot"></span> Harnais agentiques · LLM en local</div>
         <h1>Des agents qui vivent<br><span class="grad">sur votre machine.</span></h1>
+
         <p class="lead">
-          BlueJay Intel conçoit des <strong>harnais agentiques</strong> pour modèles de langage locaux :
-          l'orchestration, les outils et la mémoire qui transforment un LLM en agent fiable —
-          sans cloud, sans fuite de données, sans dépendance.
+          BlueJay Intel conçoit des <strong>harnais agentiques</strong> pour modèles de langage locaux.
+          corviPi pour travailler sur vos projets en sécurité sans saturer le contexte ;
+          aPiary pour confier vos tâches à toute une ruche d'agents. Tous deux bâtis sur le
+          <strong>harnès PI</strong>, sans cloud ni fuite de données.
         </p>
         <div class="cta">
           <a class="btn btn-primary" href="#projets">
@@ -278,26 +289,28 @@
           </a>
         </div>
         <div class="facts">
-          <div class="fact"><b>100&nbsp;%</b><span>Local-first</span></div>
+          <div class="fact"><b>PI</b><span>Harnès commun aux deux projets</span></div>
           <div class="fact"><b>2</b><span>Harnais en développement</span></div>
-          <div class="fact"><b>0</b><span>Données envoyées au cloud</span></div>
+          <div class="fact"><b>100&nbsp;%</b><span>Local &amp; sans fuite de données</span></div>
         </div>
       </div>
 
       <div class="term reveal" role="img" aria-label="Exemple de session d'agent : démarrage du harnais, chargement du modèle local et exécution d'une tâche">
         <div class="term-bar"><i></i><i></i><i></i><span>bluejay-intel ~ local</span></div>
         <div class="term-body">
-          <div class="ln"><span class="p">$</span> <span class="c">harness start --model ./models/local</span></div>
+          <div class="ln"><span class="p">$</span> <span class="c">corvipi --project ./mon-projet --local</span></div>
           <div class="ln"><span class="m">›</span> backend      <span class="ok">local</span> <span class="m">(aucun appel réseau sortant)</span></div>
+          <div class="ln"><span class="m">›</span> contexte     <span class="ok">budget 8k · compacté</span></div>
+          <div class="ln"><span class="m">›</span> sécurité     <span class="ok">shell · réseau → confirmation</span></div>
           <div class="ln"><span class="m">›</span> tools        <span class="ok">registered · 12</span></div>
           <div class="ln"><span class="m">›</span> memory       <span class="ok">on-disk, chiffrée</span></div>
           <div class="ln"><span class="m">›</span> agent        <span class="w">ready</span></div>
           <div class="ln">&nbsp;</div>
-          <div class="ln"><span class="p">›</span> <span class="c">tâche : « analyse ce dépôt local »</span></div>
-          <div class="ln"><span class="m">  plan ▸</span> scan ▸ résumé ▸ rapport</div>
-          <div class="ln"><span class="m">  step 1/3</span> <span class="ok">✓</span> scan terminé <span class="m">(1.2s)</span></div>
-          <div class="ln"><span class="m">  step 2/3</span> <span class="ok">✓</span> résumé généré <span class="m">(4.8s)</span></div>
-          <div class="ln"><span class="m">  step 3/3</span> <span class="ok">✓</span> rapport écrit <span class="m">→ ./rapport.md</span></div>
+          <div class="ln"><span class="p">›</span> <span class="c">tâche : « ajoute des tests au module auth »</span></div>
+          <div class="ln"><span class="m">  plan ▸</span> lecture ciblée ▸ patch ▸ tests</div>
+          <div class="ln"><span class="m">  step 1/3</span> <span class="ok">✓</span> 3 fichiers lus <span class="m">· 1.4k tokens</span></div>
+          <div class="ln"><span class="m">  step 2/3</span> <span class="ok">✓</span> patch proposé <span class="m">· diff 42 lignes</span></div>
+          <div class="ln"><span class="m">  step 3/3</span> <span class="ok">✓</span> tests passés <span class="m">· 18/18</span></div>
           <div class="ln"><span class="p">$</span> <span class="cursor" aria-hidden="true"></span></div>
         </div>
       </div>
@@ -319,18 +332,18 @@
       <div class="values">
         <article class="card reveal">
           <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></div>
-          <h3>Local-first</h3>
-          <p>Vos données, vos modèles, votre matériel. Les harnais sont pensés pour fonctionner hors ligne sur votre machine — aucun appel au cloud par défaut.</p>
+          <h3>Économie de contexte</h3>
+          <p>Conçu pour les LLM locaux, dont la fenêtre de contexte est petite : ce qui entre dans la fenêtre est choisi &mdash; lecture ciblée, résumés et compactage &mdash; au lieu de tout avaler.</p>
         </article>
         <article class="card reveal">
           <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 4-4 4"/><path d="m16 13 4 4-4 4"/><path d="M14 3H6a2 2 0 0 0-2 2v3"/><path d="M10 21h8a2 2 0 0 0 2-2v-3"/></svg></div>
-          <h3>Orchestration robuste</h3>
-          <p>Boucles d'agent fiables, appels d'outils déterministes, reprises sur erreur : le harnais garde le contrôle même quand le modèle part de travers.</p>
+          <h3>Sécurité par défaut</h3>
+          <p>Chaque action passe par le harnais : accès fichiers limités au projet, commandes et réseau soumis à confirmation, changements proposés en diff avant d'être appliqués.</p>
         </article>
         <article class="card reveal">
           <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6.5v5c0 4.6 3.4 8.4 8 9.5 4.6-1.1 8-4.9 8-9.5v-5L12 3Z"/><path d="m9 12 2 2 4-4"/></svg></div>
-          <h3>Observable &amp; maîtrisé</h3>
-          <p>Chaque étape est traçable : ce que l'agent a vu, décidé et exécuté. Vous gardez le contrôle sur les outils autorisés et l'accès au système.</p>
+          <h3>Une base commune : PI</h3>
+          <p>corviPi et aPiary reposent sur le même harnès, PI : boucle d'agent, outils et mémoire partagent le même socle, et les progrès de l'un profitent à l'autre.</p>
         </article>
       </div>
     </div>
@@ -342,7 +355,7 @@
       <div class="sec-head reveal">
         <div class="kicker">Projets en cours</div>
         <h2>Nos harnais agentiques</h2>
-        <p>Deux harnais complémentaires, développés par BlueJay Intel et publiés au fil de l'eau sur GitHub.</p>
+        <p>Deux harnais complémentaires, bâtis sur le même socle PI, développés par BlueJay Intel et publiés au fil de l'eau sur GitHub.</p>
       </div>
       <div class="projects">
         <article class="proj reveal" aria-labelledby="corvipi-title">
@@ -358,16 +371,22 @@
             </div>
             <span class="badge"><span class="pulse"></span>En développement</span>
           </div>
+          <span class="tag built-on">⚡ bâti sur PI</span>
           <p class="desc">
-            Un harnais agentique léger, né pour tourner sur du matériel modeste — un Raspberry&nbsp;Pi,
-            un mini-serveur, un vieux laptop. corviPi met l'accent sur la sobriété : faible empreinte
-            mémoire, démarrage rapide et exécution embarquée, du premier token jusqu'à l'appel d'outil.
+            Le harnais qui travaille sur vos projets <strong>en toute sécurité</strong>. corviPi garde le contexte pour ce qui compte :
+            il rassemble les meilleures techniques d'épargne de contexte et est pensé de bout en bout
+            pour les LLM locaux, souvent limités en fenêtre. Mieux vaut un petit modèle alimenté juste
+            qu'un grand noyé sous les tokens.
           </p>
+          <ul class="features">
+            <li>Épargne de contexte : lecture ciblée, résumés et compactage intelligent</li>
+            <li>Sécurité : accès limité au projet, actions sensibles à confirmer, patches en diff</li>
+            <li>Adapté aux fenêtres réduites des modèles qui tournent en local</li>
+          </ul>
           <div class="tags">
-            <span class="tag">edge</span>
-            <span class="tag">léger</span>
-            <span class="tag">Raspberry Pi</span>
-            <span class="tag">LLM local</span>
+            <span class="tag">épargne de contexte</span>
+            <span class="tag">sécurisé</span>
+            <span class="tag">LLM locaux</span>
           </div>
         </article>
 
@@ -384,16 +403,21 @@
             </div>
             <span class="badge"><span class="pulse"></span>En développement</span>
           </div>
+          <span class="tag built-on">⚡ bâti sur PI</span>
           <p class="desc">
-            Une ruche d'agents pour un travail qui se partage. aPiary coordonne plusieurs agents autour
-            d'une même tâche : rôles spécialisés, messagerie entre agents et mémoire partagée,
-            pour des projets où un seul modèle ne suffit pas.
+            Votre <strong>agent personnel</strong>, entouré de <strong>bots &mdash; les abeilles ouvrières</strong>.
+            Vous déléguez vos tâches, elles les exécutent de façon autonome, en parallèle, sans que vous ayez
+            à suivre chaque étape. Une ruche qui organise son travail et vous laisse le dernier mot.
           </p>
+          <ul class="features">
+            <li>Votre agent personnel comme point de contact : vous déléguez, il répartit</li>
+            <li>Abeilles ouvrières : des bots qui mènent plusieurs tâches en autonomie</li>
+            <li>Travail en parallèle, suivi depuis une seule conversation</li>
+          </ul>
           <div class="tags">
-            <span class="tag">multi-agents</span>
-            <span class="tag">orchestration</span>
-            <span class="tag">mémoire partagée</span>
-            <span class="tag">LLM local</span>
+            <span class="tag">agent personnel</span>
+            <span class="tag">bots ouvriers</span>
+            <span class="tag">tâches autonomes</span>
           </div>
         </article>
       </div>
@@ -422,8 +446,8 @@
       <div class="contact reveal">
         <h2>Suivez le vol du geai.</h2>
         <p>
-          corviPi et aPiary avancent en public. Code, notes et avancées se retrouvent sur GitHub —
-          n'hésitez pas à suivre le compte pour être averti des sorties.
+          corviPi et aPiary avancent en public, sur le socle PI. Code, notes et avancées se
+          retrouvent sur GitHub — n'hésitez pas à suivre le compte pour être averti des sorties.
         </p>
         <div class="cta">
           <a class="btn btn-primary" href="https://github.com/Quantum-Caffeine" target="_blank" rel="noopener">
