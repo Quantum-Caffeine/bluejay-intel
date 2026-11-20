@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlueJay Intel — Harnais agentiques pour LLM locaux</title>
+<meta name="description" content="BlueJay Intel conçoit des harnais agentiques pour modèles de langage locaux. Découvrez corviPi et aPiary, nos deux harnais en développement.">
+<meta name="theme-color" content="#060a14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="BlueJay Intel — Harnais agentiques pour LLM locaux">
+<meta property="og:description" content="Des harnais agentiques conçus pour faire tourner des agents LLM en local : souverains, observables et taillés pour le terrain.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#060a14;
+    --bg-2:#0a1122;
+    --surface:rgba(255,255,255,.035);
+    --surface-hover:rgba(255,255,255,.06);
+    --border:rgba(120,170,255,.14);
+    --border-strong:rgba(120,200,255,.32);
+    --text:#e8eef8;
+    --muted:#93a3bf;
+    --blue:#2f6bff;
+    --blue-soft:#7aa8ff;
+    --cyan:#22d3ee;
+    --radius:16px;
+    --maxw:1120px;
+    --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  body{
+    margin:0;font-family:var(--font);color:var(--text);background:var(--bg);
+    line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  /* Décor de fond : halos + grille subtile */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 520px at 78% -8%,rgba(47,107,255,.30),transparent 62%),
+      radial-gradient(700px 460px at 8% 8%,rgba(34,211,238,.14),transparent 60%),
+      radial-gradient(900px 700px at 50% 110%,rgba(47,107,255,.14),transparent 65%),
+      var(--bg);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:
+      linear-gradient(rgba(120,170,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(120,170,255,.05) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 85%);
+    -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 85%);
+  }
+  a{color:inherit}
+  h1,h2,h3{line-height:1.15;margin:0;letter-spacing:-.02em;font-weight:700}
+  p{margin:0}
+  .wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:24px}
+  .skip{position:absolute;left:-9999px}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    background:rgba(6,10,20,.62);border-bottom:1px solid var(--border);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px;gap:20px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:700;letter-spacing:-.01em}
+  .brand .mark{width:34px;height:34px;flex:none}
+  .brand span small{display:block;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);line-height:1}
+  .brand span b{font-size:18px;line-height:1.1}
+  .brand span b em{font-style:normal;background:linear-gradient(90deg,var(--blue-soft),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nav-links{display:flex;align-items:center;gap:28px}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+  .nav-links a:hover{color:var(--text)}
+  @media (max-width:760px){.nav-links .hide-sm{display:none}}
+
+  /* ---------- Boutons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:12px 20px;border-radius:999px;font-weight:600;font-size:15px;
+    text-decoration:none;border:1px solid transparent;transition:transform .15s,box-shadow .2s,background .2s,border-color .2s;
+    white-space:nowrap;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{
+    color:#fff;background:linear-gradient(135deg,var(--blue) 0%,#1e90e8 55%,var(--cyan) 130%);
+    box-shadow:0 8px 30px -10px rgba(47,107,255,.9),inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .btn-primary:hover{box-shadow:0 12px 38px -8px rgba(47,107,255,1),inset 0 1px 0 rgba(255,255,255,.3)}
+  .btn-ghost{color:var(--text);background:var(--surface);border-color:var(--border-strong)}
+  .btn-ghost:hover{background:var(--surface-hover);border-color:var(--cyan)}
+  .btn svg{width:18px;height:18px}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;padding:clamp(64px,10vw,128px) 0 clamp(56px,8vw,96px)}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+  @media (max-width:940px){.hero-grid{grid-template-columns:1fr;gap:48px}}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:6px 14px 6px 8px;border-radius:999px;font-size:13px;font-weight:500;color:var(--blue-soft);
+    background:rgba(47,107,255,.10);border:1px solid rgba(122,168,255,.28);margin-bottom:24px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px rgba(34,211,238,.18);margin-left:4px}
+  .hero h1{font-size:clamp(2.3rem,5.4vw,4.15rem);letter-spacing:-.035em;font-weight:750}
+  .hero h1 .grad{background:linear-gradient(100deg,#9dc2ff 0%,var(--cyan) 60%,#5ef0d0 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .lead{margin-top:24px;font-size:clamp(1.02rem,1.6vw,1.18rem);color:var(--muted);max-width:56ch}
+  .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+  .hero .facts{display:flex;flex-wrap:wrap;gap:28px;margin-top:44px;padding-top:28px;border-top:1px solid var(--border)}
+  .fact b{display:block;font-size:22px;letter-spacing:-.02em}
+  .fact span{font-size:13px;color:var(--muted)}
+
+  /* Terminal décoratif */
+  .term{
+    background:linear-gradient(180deg,rgba(14,22,42,.92),rgba(8,14,28,.92));
+    border:1px solid var(--border-strong);border-radius:var(--radius);
+    box-shadow:0 40px 80px -40px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.02) inset,0 0 60px -20px rgba(47,107,255,.35);
+    overflow:hidden;font-family:var(--mono);font-size:13px;
+  }
+  .term-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)}
+  .term-bar i{width:11px;height:11px;border-radius:50%;background:#2a3a5c;display:block}
+  .term-bar i:first-child{background:#ff5f57}.term-bar i:nth-child(2){background:#febc2e}.term-bar i:nth-child(3){background:#28c840}
+  .term-bar span{margin-left:auto;color:var(--muted);font-size:11.5px}
+  .term-body{padding:18px 18px 22px;line-height:1.85}
+  .term-body .ln{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .p{color:var(--cyan)} .c{color:#e8eef8} .m{color:#6f83a6} .ok{color:#4ade80} .w{color:#fbbf24}
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--cyan);vertical-align:-2px;animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ---------- Sections ---------- */
+  section{padding:clamp(64px,9vw,104px) 0}
+  .sec-head{max-width:720px;margin-bottom:clamp(36px,5vw,56px)}
+  .sec-head .kicker{font-size:12.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.7rem);letter-spacing:-.03em}
+  .sec-head p{margin-top:16px;color:var(--muted);font-size:1.05rem}
+
+  /* Valeurs */
+  .values{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media (max-width:860px){.values{grid-template-columns:1fr}}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:28px;transition:border-color .25s,background .25s,transform .25s;
+  }
+  .card:hover{border-color:var(--border-strong);background:var(--surface-hover);transform:translateY(-2px)}
+  .card .ico{
+    width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin-bottom:18px;
+    background:linear-gradient(135deg,rgba(47,107,255,.25),rgba(34,211,238,.15));border:1px solid rgba(122,168,255,.3);color:var(--blue-soft);
+  }
+  .card .ico svg{width:22px;height:22px}
+  .card h3{font-size:1.12rem;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:.97rem}
+
+  /* Projets */
+  .projects{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media (max-width:860px){.projects{grid-template-columns:1fr}}
+  .proj{
+    position:relative;overflow:hidden;border-radius:20px;padding:34px;
+    background:linear-gradient(180deg,rgba(18,28,52,.85),rgba(9,15,30,.85));
+    border:1px solid var(--border-strong);
+    display:flex;flex-direction:column;gap:20px;
+    transition:border-color .25s,transform .25s,box-shadow .25s;
+  }
+  .proj::before{
+    content:"";position:absolute;inset:-1px -1px auto -1px;height:3px;
+    background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);
+    opacity:.8;
+  }
+  .proj:hover{transform:translateY(-3px);box-shadow:0 30px 60px -40px rgba(47,107,255,.8)}
+  .proj.head-card::before{background:linear-gradient(90deg,transparent,var(--cyan),#5ef0d0,transparent)}
+  .proj.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .proj .logo{display:flex;align-items:center;gap:12px}
+  .proj .logo svg{width:40px;height:40px;flex:none}
+  .proj h3{font-family:var(--mono);font-size:1.45rem;letter-spacing:-.02em}
+  .proj h3 .accent{color:var(--cyan)}
+  .badge{
+    font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:5px 11px;border-radius:999px;color:#ffd479;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .badge .pulse{width:7px;height:7px;border-radius:50%;background:#fbbf24;box-shadow:0 0 0 0 rgba(251,191,36,.6);animation:pulse 2s infinite}
+  @keyframes pulse{70%{box-shadow:0 0 0 8px rgba(251,191,36,0)}100%{box-shadow:0 0 0 0 rgba(251,191,36,0)}}
+  .proj .desc{color:var(--muted);font-size:1rem}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
+  .tag{font-family:var(--mono);font-size:12px;color:#b9cbe8;background:rgba(120,170,255,.08);border:1px solid var(--border);padding:4px 10px;border-radius:8px}
+
+  /* Architecture / pipeline */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
+  @media (max-width:860px){.flow{grid-template-columns:1fr 1fr}}
+  @media (max-width:520px){.flow{grid-template-columns:1fr}}
+  .step{padding:24px;border-radius:14px;background:var(--surface);border:1px solid var(--border);position:relative}
+  .step::before{
+    counter-increment:step;content:"0" counter(step);
+    font-family:var(--mono);font-size:12px;color:var(--cyan);font-weight:700;letter-spacing:.08em;
+    display:block;margin-bottom:14px;
+  }
+  .step h3{font-size:1rem;margin-bottom:6px}
+  .step p{font-size:.92rem;color:var(--muted)}
+
+  /* Contact */
+  .contact{
+    position:relative;overflow:hidden;border-radius:24px;padding:clamp(36px,6vw,64px);text-align:center;
+    background:
+      radial-gradient(600px 280px at 50% 0%,rgba(47,107,255,.28),transparent 70%),
+      linear-gradient(180deg,rgba(16,26,48,.9),rgba(8,14,28,.9));
+    border:1px solid var(--border-strong);
+  }
+  .contact h2{font-size:clamp(1.7rem,3.6vw,2.6rem);letter-spacing:-.03em}
+  .contact p{color:var(--muted);margin:16px auto 0;max-width:56ch;font-size:1.05rem}
+  .contact .cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:32px}
+
+  /* Footer */
+  footer{border-top:1px solid var(--border);padding:36px 0;color:var(--muted);font-size:14px}
+  .foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+  .foot a{color:var(--muted);text-decoration:none;transition:color .2s}
+  .foot a:hover{color:var(--text)}
+  .foot .links{display:flex;gap:22px}
+
+  /* Apparition au scroll (progressif : le contenu reste visible sans JS) */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  .no-js .reveal{opacity:1;transform:none}
+</style>
+</head>
+<body class="no-js">
+<a class="skip" href="#main">Aller au contenu</a>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="BlueJay Intel — accueil">
+      <svg class="mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7aa8ff"/><stop offset="1" stop-color="#22d3ee"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="60" height="60" rx="16" fill="#0b1426" stroke="url(#g1)" stroke-width="2"/>
+        <path d="M47 14c-9 1-16 5-20 12-4 6-4 12-2 19 8-1 15-5 19-12 4-6 5-12 3-19Z" fill="url(#g1)" opacity=".95"/>
+        <path d="M44 19 24 39" stroke="#06101f" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M18 49c4-2 6-5 7-9" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="39" cy="22" r="1.9" fill="#06101f"/>
+      </svg>
+      <span><small>Harnais agentiques</small><b>BlueJay <em>Intel</em></b></span>
+    </a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a class="hide-sm" href="#approche">Approche</a>
+      <a class="hide-sm" href="#projets">Projets</a>
+      <a href="https://github.com/Quantum-Caffeine" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> Harnais agentiques · LLM en local</div>
+        <h1>Des agents qui vivent<br><span class="grad">sur votre machine.</span></h1>
+        <p class="lead">
+          BlueJay Intel conçoit des <strong>harnais agentiques</strong> pour modèles de langage locaux :
+          l'orchestration, les outils et la mémoire qui transforment un LLM en agent fiable —
+          sans cloud, sans fuite de données, sans dépendance.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#projets">
+            Découvrir nos harnais
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/Quantum-Caffeine" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+            GitHub
+          </a>
+        </div>
+        <div class="facts">
+          <div class="fact"><b>100&nbsp;%</b><span>Local-first</span></div>
+          <div class="fact"><b>2</b><span>Harnais en développement</span></div>
+          <div class="fact"><b>0</b><span>Données envoyées au cloud</span></div>
+        </div>
+      </div>
+
+      <div class="term reveal" role="img" aria-label="Exemple de session d'agent : démarrage du harnais, chargement du modèle local et exécution d'une tâche">
+        <div class="term-bar"><i></i><i></i><i></i><span>bluejay-intel ~ local</span></div>
+        <div class="term-body">
+          <div class="ln"><span class="p">$</span> <span class="c">harness start --model ./models/local</span></div>
+          <div class="ln"><span class="m">›</span> backend      <span class="ok">local</span> <span class="m">(aucun appel réseau sortant)</span></div>
+          <div class="ln"><span class="m">›</span> tools        <span class="ok">registered · 12</span></div>
+          <div class="ln"><span class="m">›</span> memory       <span class="ok">on-disk, chiffrée</span></div>
+          <div class="ln"><span class="m">›</span> agent        <span class="w">ready</span></div>
+          <div class="ln">&nbsp;</div>
+          <div class="ln"><span class="p">›</span> <span class="c">tâche : « analyse ce dépôt local »</span></div>
+          <div class="ln"><span class="m">  plan ▸</span> scan ▸ résumé ▸ rapport</div>
+          <div class="ln"><span class="m">  step 1/3</span> <span class="ok">✓</span> scan terminé <span class="m">(1.2s)</span></div>
+          <div class="ln"><span class="m">  step 2/3</span> <span class="ok">✓</span> résumé généré <span class="m">(4.8s)</span></div>
+          <div class="ln"><span class="m">  step 3/3</span> <span class="ok">✓</span> rapport écrit <span class="m">→ ./rapport.md</span></div>
+          <div class="ln"><span class="p">$</span> <span class="cursor" aria-hidden="true"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPROCHE -->
+  <section id="approche">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="kicker">Notre approche</div>
+        <h2>Un bon modèle ne suffit pas.<br>Il faut un bon harnais.</h2>
+        <p>
+          Un harnais agentique est tout ce qui entoure le modèle : boucle de raisonnement, appels d'outils,
+          gestion du contexte, mémoire et garde-fous. C'est là que se joue la différence entre une démo
+          impressionnante et un agent qui travaille vraiment.
+        </p>
+      </div>
+      <div class="values">
+        <article class="card reveal">
+          <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></div>
+          <h3>Local-first</h3>
+          <p>Vos données, vos modèles, votre matériel. Les harnais sont pensés pour fonctionner hors ligne sur votre machine — aucun appel au cloud par défaut.</p>
+        </article>
+        <article class="card reveal">
+          <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 4-4 4"/><path d="m16 13 4 4-4 4"/><path d="M14 3H6a2 2 0 0 0-2 2v3"/><path d="M10 21h8a2 2 0 0 0 2-2v-3"/></svg></div>
+          <h3>Orchestration robuste</h3>
+          <p>Boucles d'agent fiables, appels d'outils déterministes, reprises sur erreur : le harnais garde le contrôle même quand le modèle part de travers.</p>
+        </article>
+        <article class="card reveal">
+          <div class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6.5v5c0 4.6 3.4 8.4 8 9.5 4.6-1.1 8-4.9 8-9.5v-5L12 3Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h3>Observable &amp; maîtrisé</h3>
+          <p>Chaque étape est traçable : ce que l'agent a vu, décidé et exécuté. Vous gardez le contrôle sur les outils autorisés et l'accès au système.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJETS -->
+  <section id="projets">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="kicker">Projets en cours</div>
+        <h2>Nos harnais agentiques</h2>
+        <p>Deux harnais complémentaires, développés par BlueJay Intel et publiés au fil de l'eau sur GitHub.</p>
+      </div>
+      <div class="projects">
+        <article class="proj reveal" aria-labelledby="corvipi-title">
+          <div class="top">
+            <div class="logo">
+              <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <rect x="1" y="1" width="38" height="38" rx="11" fill="rgba(47,107,255,.12)" stroke="#7aa8ff" stroke-width="1.4"/>
+                <path d="M29 10c-6 .7-11 3.4-13.5 8-2.4 4.2-2.3 8.4-1 13 5.5-.8 10-3.6 12.6-8 2.4-4.1 2.8-8.6 1.9-13Z" fill="#7aa8ff"/>
+                <path d="M27 13.5 15 25.5" stroke="#0b1426" stroke-width="2" stroke-linecap="round"/>
+                <path d="M11 31c2.6-1.3 4-3.3 4.7-6" stroke="#22d3ee" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <h3 id="corvipi-title">corvi<span class="accent">Pi</span></h3>
+            </div>
+            <span class="badge"><span class="pulse"></span>En développement</span>
+          </div>
+          <p class="desc">
+            Un harnais agentique léger, né pour tourner sur du matériel modeste — un Raspberry&nbsp;Pi,
+            un mini-serveur, un vieux laptop. corviPi met l'accent sur la sobriété : faible empreinte
+            mémoire, démarrage rapide et exécution embarquée, du premier token jusqu'à l'appel d'outil.
+          </p>
+          <div class="tags">
+            <span class="tag">edge</span>
+            <span class="tag">léger</span>
+            <span class="tag">Raspberry Pi</span>
+            <span class="tag">LLM local</span>
+          </div>
+        </article>
+
+        <article class="proj head-card reveal" aria-labelledby="apiary-title">
+          <div class="top">
+            <div class="logo">
+              <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <rect x="1" y="1" width="38" height="38" rx="11" fill="rgba(34,211,238,.10)" stroke="#22d3ee" stroke-width="1.4"/>
+                <path d="M20 7.5 30.8 13.75v12.5L20 32.5 9.2 26.25V13.75L20 7.5Z" stroke="#22d3ee" stroke-width="1.6" stroke-linejoin="round"/>
+                <circle cx="20" cy="20" r="3.2" fill="#22d3ee"/>
+                <circle cx="20" cy="20" r="6.8" stroke="#22d3ee" stroke-width="1.1" stroke-dasharray="2.2 2.6" opacity=".85"/>
+              </svg>
+              <h3>a<span class="accent">Pi</span>ary</h3>
+            </div>
+            <span class="badge"><span class="pulse"></span>En développement</span>
+          </div>
+          <p class="desc">
+            Une ruche d'agents pour un travail qui se partage. aPiary coordonne plusieurs agents autour
+            d'une même tâche : rôles spécialisés, messagerie entre agents et mémoire partagée,
+            pour des projets où un seul modèle ne suffit pas.
+          </p>
+          <div class="tags">
+            <span class="tag">multi-agents</span>
+            <span class="tag">orchestration</span>
+            <span class="tag">mémoire partagée</span>
+            <span class="tag">LLM local</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMENT ÇA MARCHE -->
+  <section id="comment">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="kicker">Sous le capot</div>
+        <h2>Ce que fait le harnais,<br>le modèle se contente de réfléchir.</h2>
+      </div>
+      <div class="flow">
+        <div class="step reveal"><h3>Modèle local</h3><p>Un LLM qui tourne sur votre machine ou votre serveur, sans API distante.</p></div>
+        <div class="step reveal"><h3>Boucle d'agent</h3><p>Planifier, agir, observer, recommencer — avec des limites claires et des reprises.</p></div>
+        <div class="step reveal"><h3>Outils &amp; mémoire</h3><p>Accès fichiers, commandes autorisées et mémoire persistante sur disque.</p></div>
+        <div class="step reveal"><h3>Résultat tracé</h3><p>Une trace complète de chaque étape, pour comprendre et vérifier.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact reveal">
+        <h2>Suivez le vol du geai.</h2>
+        <p>
+          corviPi et aPiary avancent en public. Code, notes et avancées se retrouvent sur GitHub —
+          n'hésitez pas à suivre le compte pour être averti des sorties.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/Quantum-Caffeine" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+            github.com/Quantum-Caffeine
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>© <span id="year">2026</span> BlueJay Intel — Harnais agentiques pour LLM locaux.</div>
+    <div class="links">
+      <a href="#projets">Projets</a>
+      <a href="https://github.com/Quantum-Caffeine" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.body.classList.remove('no-js');
+  document.getElementById('year').textContent = new Date().getFullYear();
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>
