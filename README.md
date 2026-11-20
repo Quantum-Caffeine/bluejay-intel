@@ -14,8 +14,10 @@ Page statique unique (HTML + CSS + un peu de JS), **aucune dépendance**, prête
 
 Tout est dans `index.html`, en français :
 
-- **Textes des projets** : recherchez `corviPi` et `aPiary` (balises `<p class="desc">`).
+- **Textes des projets** : recherchez `corviPi` et `aPiary` (balises `<p class="desc">` et `<ul class="features">`).
+  Chaque carte porte un écusson `bâti sur PI` (classe `tag built-on`).
 - **Nuances de couleur** : variables dans `:root` en haut du `<style>` (`--blue`, `--cyan`, `--bg`…).
+- **Terminal décoratif** : blocs `<div class="ln">` dans la section `HERO`.
 - **Lien GitHub** : recherchez `github.com/Quantum-Caffeine` (4 occurrences).
 - **Meta description / partage** : balises `<title>`, `<meta name="description">`, `og:*` en haut du fichier.
 
